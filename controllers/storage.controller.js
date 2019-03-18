@@ -1,5 +1,6 @@
 const ApiError = require('../ApiError');
 const mysql = require('../database/db.connector')
+const storage = require('../logic/storage')
 
 module.exports = {
     postEnergie(req, res, next) {
@@ -25,5 +26,15 @@ module.exports = {
                 res.status(200).send(result)
             }
         })
+    },
+
+    saveEnergie(req, res, next) {
+        let record = 0;
+        try {
+            record = new storage().createRecord(req.body.info);
+        } catch (err){
+            res.send(new ApiError(err.toString(), 500))
+        }
+        res.status(200).send(record)
     }
 };
