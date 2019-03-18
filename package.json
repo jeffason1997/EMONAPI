@@ -1,0 +1,28 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "tsc": "tsc",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.18.3",
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "express-swagger-generator": "^1.1.13",
+        "express-validator": "^5.3.0",
+        "git": "^0.1.5",
+        "jwt-simple": "^0.5.5",
+        "moment": "^2.22.2",
+        "mongoose": "^5.2.8",
+        "mysql": "^2.16.0",
+        "nodemon": "^1.18.10",
+        "sequelize": "^5.1.0",
+        "typescript": "^3.3.3"
+    }
+}
