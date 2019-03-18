@@ -64,7 +64,7 @@ function shutdown() {
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
-const server = app.listen(420,'192.168.0.103', () => {
+const server = app.listen(420, () => {
     console.log('The magic happens at port ' + server.address().port)
 });
 
