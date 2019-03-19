@@ -36,7 +36,7 @@ module.exports = {
                                 });
                             }
                         });
-                    } else { res.send(new ApiError(err.toString(), 503)); }
+                    } else { res.send(new ApiError(req.body, 503)); }
                 } else { res.status(200).send("Added"); }
             });
         } catch (error) { res.send(new ApiError(err.toString(), 500)); }

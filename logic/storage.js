@@ -7,7 +7,7 @@ class storage {
 
     createRecord(rawText) {
         var record = new energieRecord();
-        var lines = rawText.split(" ");
+        var lines = rawText.split("\r\n");
 
         record.Id = (lines.filter(o => o.includes('0-0:96.1.1')))[0].split('(')[1].split(')')[0];
         let date = (lines.filter(o => o.includes('0-0:1.0.0')))[0].split('(')[1].split(')')[0].match(/.{1,2}/g);
