@@ -32,12 +32,24 @@ module.exports = {
         let record = 0;
         try {
             record = new storage().createRecord(req.body.info);
-let sql = 'INSTERT INTO energiemeting VALUES (?,NOW(),?,?,?,?,?,?,?)';
-let todo = ['hdfshfdsh',4534643,44346432,34643636,364363,3644334,3534654,  1];
+let sql = 'INSERT INTO energiemeting VALUES (?,?,?,?,?,?,?,?,?)';
+let todo = [record.Id, record.Time, record.ToClient1, record.ToClient2, record.FromClient1, record.FromClient2, record.CurrentTo, record.CurrentFrom, 1];
 mysql.query(sql,todo, (err, result, fields) => {
 	if(err){
-		res.send(todo);
-	} else {
+		if(err.toString().includes('ER_NO_REFERENCED_ROW')){
+			console.log("Nieuwe Kast Bruuuur");
+		let kastSql = 'INSERT INTO energiemeter VALUES(?)';
+		let kastTodo = [record.Id];
+		mysql.query(kastSql, kastTodo, (err, result, fields) => {
+			if(err){
+				res.send(new ApiError(err.toString(),569));
+			} else {
+				console.log('nieuw kast gemaakt bruuur');
+			}
+});
+		}else {
+		res.send(new ApiError(err.toString(), 510));
+	}} else {
 		res.status(200).send(record);
 	
 	}});
