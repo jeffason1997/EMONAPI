@@ -16,8 +16,9 @@ module.exports = {
     },
 
     saveEnergie(req, res, next) {
+
         try {
-            record = new storage().createRecord(req.body.info);
+            record = new storage().createRecord(req.body);
             let sql = 'INSERT INTO energiemeting VALUES (?,?,?,?,?,?,?,?,?)';
             let todo = [record.Id, record.Time, record.ToClient1, record.ToClient2, record.FromClient1, record.FromClient2, record.CurrentTo, record.CurrentFrom, record.CurrentTarif];
 
@@ -31,7 +32,7 @@ module.exports = {
                             else {
                                 mysql.query(sql, todo, (err, result, fields) => {
                                     if (err) { res.send(new ApiError(err.toString(), 502)); }
-                                    else {res.status(200).send("Added new"); }
+                                    else { res.status(200).send("Added new"); }
                                 });
                             }
                         });
@@ -39,5 +40,7 @@ module.exports = {
                 } else { res.status(200).send("Added"); }
             });
         } catch (error) { res.send(new ApiError(err.toString(), 500)); }
+
     }
+
 };

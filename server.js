@@ -10,6 +10,7 @@ const httpSchemes = process.env.NODE_ENV === 'production' ? ['https'] : ['http']
 
 const app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -23,7 +24,7 @@ const options = {
         },
         host: process.env.ALLOW_ORIGIN,
         produces: [
-            'application/json'
+            'application/json', 'text/plain'
         ],
         securityDefinition: {
             JWT: {
