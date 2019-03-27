@@ -1,4 +1,5 @@
 const energieRecord = require('../models/energieRecord');
+const meting = require('../models/meting')
 
 class storage {
     constructor() {
@@ -21,6 +22,14 @@ class storage {
         record.CurrentTarif = (lines.filter(o=> o.includes('0-0:96.14.0')))[0].split('(')[1].split(')')[0];
 
         return record;
+    }
+
+    createMetingRecord(jsonText) {
+	console.log('Creating Meting ()')
+	console.log(jsonText)
+	let record = new meting()
+	console.log('parsing json')
+	return record
     }
 }
 

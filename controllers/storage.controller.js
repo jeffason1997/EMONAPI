@@ -41,6 +41,14 @@ module.exports = {
             });
         } catch (error) { res.send(new ApiError(err.toString(), 500)); }
 
+    },
+
+    saveMeting(req, res, next) {
+	try {
+	    console.log('Meting received for saving' + JSON.stringify(req.body))
+	    let record = new storage().createMetingRecord(req.body)
+	    res.send('ok')
+	} catch (error) {console.log(error);res.send('ok')}
     }
 
 };
