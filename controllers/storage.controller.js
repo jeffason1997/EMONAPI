@@ -15,8 +15,18 @@ module.exports = {
         })
     },
 
-    saveEnergie(req, res, next) {
+    getLatestEnergie(req, res, next){
+        let sql = 'SELECT verbruik, opgeleverd FROM energiemeting ORDER BY tijdstip DESC LIMIT 1';
+        mysql.query(sql, (err, result, fields) => {
+            if (err) {
+                res.send(new ApiError(err.toString(), 500))
+            } else {
+                res.status(200).send(result)
+            }
+        })
+    },
 
+    saveEnergie(req, res, next) {
         try {
             record = new storage().createRecord(req.body);
             let sql = 'INSERT INTO energiemeting VALUES (?,?,?,?,?,?,?,?,?)';
@@ -42,13 +52,52 @@ module.exports = {
         } catch (error) { res.send(new ApiError(err.toString(), 500)); }
 
     },
+    
+    getMeting(req, res, next) {
+        let sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting`;
+        mysql.query(sql, (err, result, fields) => {
+            if (err) {
+                res.send(new ApiError(err.toString(), 500))
+            } else {
+                res.status(200).send(result)
+            }
+        })
+    },
+
+    getLatestMeting(req, res, next){
+        let sql = 'SELECT temperatuur_binnen, luchtvochtigheid FROM sensormeting ORDER BY tijdstip DESC LIMIT 1';
+        mysql.query(sql, (err, result, fields) => {
+            if (err) {
+                res.send(new ApiError(err.toString(), 500))
+            } else {
+                res.status(200).send(result)
+            }
+        })
+    },
 
     saveMeting(req, res, next) {
-	try {
-	    console.log('Meting received for saving' + JSON.stringify(req.body))
-	    let record = new storage().createMetingRecord(req.body)
-	    res.send('ok')
-	} catch (error) {console.log(error);res.send('ok')}
+        try {
+            let record = new storage().createMetingRecord(req.body)
+            let sql = 'INSERT INTO sensormeting(mac_adres, tijdstip, temperatuur_binnen, luchtvochtigheid) VALUES (?,?,?,?)';
+            let todo = [record.MacAddres, record.Time, record.InsideTempature, record.Humidity];
+            mysql.query(sql, todo, (err, result, fields) => {
+                if (err) {
+                    if (err.toString().includes('ER_NO_REFERENCED_ROW')) {
+                        let groepSql = 'INSERT INTO sensorgroep VALUES(?)';
+                        let groepTodo = [record.MacAddres];
+                        mysql.query(groepSql, groepTodo, (err, result, fields) => {
+                            if (err) { res.send(new ApiError(err.toString(), 501)); }
+                            else {
+                                mysql.query(sql, todo, (err, result, fields) => {
+                                    if (err) { res.send(new ApiError(err.toString(), 502)); }
+                                    else { res.status(200).send("Added new"); }
+                                });
+                            }
+                        });
+                    } else { res.send(new ApiError(err.toString(), 503)); }
+                } else { res.status(200).send("Added"); }
+            });
+        } catch (error) { res.send(new ApiError(err.toString(), 500)); }
     }
 
 };
