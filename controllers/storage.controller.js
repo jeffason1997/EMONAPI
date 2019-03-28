@@ -1,22 +1,39 @@
 const ApiError = require('../ApiError');
 const mysql = require('../database/db.connector')
 const storage = require('../logic/storage')
+const dateFormatter = require('../logic/dateFormatter')
+const calculations = require('../logic/calculation');
 
 module.exports = {
 
     getEnergie(req, res, next) {
-        let sql = `SELECT tijdstip,opgenomen_tarief_1,opgenomen_tarief_2,teruggeleverd_tarief_1,teruggeleverd_tarief_2,verbruik,opgeleverd,huidig_tarief FROM energiemeting`;
+        let id = req.params.id;
+        let begin = dateFormatter.SqlDate(new Date(req.query.begin));
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind),1);
+        let type = req.query.sort;
+        let sql;
+        if(begin.includes('NaN') || eind.includes('NaN')){
+            sql = `SELECT tijdstip,verbruik,opgeleverd FROM energiemeting
+            WHERE serienummer = ${id}`
+        }else {
+            sql = `SELECT tijdstip,verbruik,opgeleverd FROM energiemeting
+            WHERE serienummer = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
+        }
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
+            } else if(begin >= eind && sql.includes("BETWEEN")){
+                console.log(begin<eind);
+                res.send(new ApiError("End day before Begin day", 501));
             } else {
-                res.status(200).send(result)
+                res.status(200).send(calculations.sorting(result, type));
             }
         })
     },
 
     getLatestEnergie(req, res, next){
-        let sql = 'SELECT verbruik, opgeleverd FROM energiemeting ORDER BY tijdstip DESC LIMIT 1';
+        let id = req.params.id;
+        let sql = `SELECT opgenomen_tarief_1, opgenomen_tarief_2, teruggeleverd_tarief_1, teruggeleverd_tarief_2, verbruik, opgeleverd, huidig_tarief FROM energiemeting WHERE serienummer = ${id} ORDER BY tijdstip DESC LIMIT 1`;
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
@@ -54,7 +71,10 @@ module.exports = {
     },
     
     getMeting(req, res, next) {
-        let sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting`;
+        let id = req.params.id;
+        let begin = dateFormatter.SqlDate(new Date(req.query.begin));
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind));
+        let sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE mac_adres = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
@@ -65,7 +85,8 @@ module.exports = {
     },
 
     getLatestMeting(req, res, next){
-        let sql = 'SELECT temperatuur_binnen, luchtvochtigheid FROM sensormeting ORDER BY tijdstip DESC LIMIT 1';
+        let id = req.params.id;
+        let sql = `SELECT temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE mac_addres = ${id} ORDER BY tijdstip DESC LIMIT 1`;
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
