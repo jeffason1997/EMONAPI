@@ -86,7 +86,7 @@ module.exports = {
 
     getLatestMeting(req, res, next){
         let id = req.params.id;
-        let sql = `SELECT temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE mac_addres = ${id} ORDER BY tijdstip DESC LIMIT 1`;
+        let sql = `SELECT temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE mac_adres = ${id} ORDER BY tijdstip DESC LIMIT 1`;
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
