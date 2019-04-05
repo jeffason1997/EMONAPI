@@ -23,7 +23,6 @@ module.exports = {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
             } else if(begin >= eind && sql.includes("BETWEEN")){
-                console.log(begin<eind);
                 res.send(new ApiError("End day before Begin day", 501));
             } else {
                 res.status(200).send(calculations.sorting(result, type));
@@ -73,13 +72,24 @@ module.exports = {
     getMeting(req, res, next) {
         let id = req.params.id;
         let begin = dateFormatter.SqlDate(new Date(req.query.begin));
-        let eind = dateFormatter.SqlDate(new Date(req.query.eind));
-        let sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE mac_adres = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind),1);
+        let type = req.query.sort;
+        let sql;
+        if(begin.includes('NaN') || eind.includes('NaN')){
+            sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE 
+            mac_adres = ${id}`
+        }else {
+            sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE 
+            mac_adres = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
+        }
+
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
+            } else if(begin >= eind && sql.includes("BETWEEN")){
+                res.send(new ApiError("End day before Begin day", 501));
             } else {
-                res.status(200).send(result)
+                res.status(200).send(calculations.sortingMeting(result, type))
             }
         })
     },
