@@ -8,8 +8,8 @@ module.exports = {
 
     getEnergie(req, res, next) {
         let id = req.params.id;
-        let begin = dateFormatter.SqlDate(new Date(req.query.begin));
-        let eind = dateFormatter.SqlDate(new Date(req.query.eind),1);
+        let begin = dateFormatter.SqlDate(new Date(req.query.begin),-1);
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind));
         let type = req.query.sort;
         let sql;
         if(begin.includes('NaN') || eind.includes('NaN')){
@@ -19,6 +19,7 @@ module.exports = {
             sql = `SELECT tijdstip,verbruik,opgeleverd FROM energiemeting
             WHERE serienummer = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
         }
+        console.log(sql);
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
@@ -71,8 +72,8 @@ module.exports = {
     
     getMeting(req, res, next) {
         let id = req.params.id;
-        let begin = dateFormatter.SqlDate(new Date(req.query.begin));
-        let eind = dateFormatter.SqlDate(new Date(req.query.eind),1);
+        let begin = dateFormatter.SqlDate(new Date(req.query.begin),-1);
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind));
         let type = req.query.sort;
         let sql;
         if(begin.includes('NaN') || eind.includes('NaN')){
@@ -82,7 +83,6 @@ module.exports = {
             sql = `SELECT tijdstip, temperatuur_binnen, luchtvochtigheid FROM sensormeting WHERE 
             mac_adres = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
         }
-
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
