@@ -129,6 +129,21 @@ module.exports = {
                 } else { res.status(200).send("Added"); }
             });
         } catch (error) { res.send(new ApiError(err.toString(), 500)); }
+    },
+
+    getAllHuizen(req, res, next) {
+        try {
+            let sql = "select * from huis";
+            mysql.query(sql, (err, result, fields) => {
+                if(err) {res.send(new ApiError(err.toString(), 501));}
+                else {
+                    res.send(result);
+                }
+            });
+        } catch (error) { res.send(new ApiError(err.toString(), 500)); }
+
     }
+
+
 
 };
