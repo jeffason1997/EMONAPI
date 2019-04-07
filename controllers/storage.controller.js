@@ -142,8 +142,18 @@ module.exports = {
             });
         } catch (error) { res.send(new ApiError(err.toString(), 500)); }
 
+    },
+    
+    getSerieNummerAndMACadresFromHouseWithId(req, res, next) {
+        try {
+            let id = req.params.id;
+            let sql = "select serienummer,mac_adres from huis WHERE huis_id = " + id;
+            mysql.query(sql, (err, result, fields) => {
+                if(err) {res.send(new ApiError(err.toString(), 501));}
+                else {
+                    res.send(result);
+                }
+            });
+        } catch (error) { res.send(new ApiError(err.toString(), 500)); }
     }
-
-
-
-};
+}

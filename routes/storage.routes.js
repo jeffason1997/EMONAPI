@@ -9,5 +9,6 @@ routes.post('/meting', EnergieController.saveMeting);
 routes.get('/meting/:id', EnergieController.getMeting);
 routes.get('/newmeting/:id', EnergieController.getLatestMeting);
 routes.get('/huizen', EnergieController.getAllHuizen);
+routes.get('/infoVanHuis/:id', EnergieController.getSerieNummerAndMACadresFromHouseWithId)
 
 module.exports = routes;
