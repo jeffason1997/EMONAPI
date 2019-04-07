@@ -19,12 +19,14 @@ module.exports = {
             sql = `SELECT tijdstip,verbruik,opgeleverd FROM energiemeting
             WHERE serienummer = ${id} AND tijdstip BETWEEN '${begin}' AND '${eind}'`;
         }
-        console.log(sql);
         mysql.query(sql, (err, result, fields) => {
             if (err) {
                 res.send(new ApiError(err.toString(), 500))
             } else if(begin >= eind && sql.includes("BETWEEN")){
                 res.send(new ApiError("End day before Begin day", 501));
+            } else if (type=="TotalWeekly"){
+                console.log("Yeah bOy")
+                res.status(200).send(calculations.sortWeek(result, type));
             } else {
                 res.status(200).send(calculations.sorting(result, type));
             }

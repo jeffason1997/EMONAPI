@@ -11,6 +11,7 @@ class formattedDate {
 
   UserDate(date, mode) {
     let utc = 0;
+    if(mode == "TotalWeekly") mode = "Dag";
     let format = this.TimeFormat(mode);
 
 
