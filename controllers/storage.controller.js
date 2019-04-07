@@ -8,8 +8,8 @@ module.exports = {
 
     getEnergie(req, res, next) {
         let id = req.params.id;
-        let begin = dateFormatter.SqlDate(new Date(req.query.begin),-1);
-        let eind = dateFormatter.SqlDate(new Date(req.query.eind));
+        let begin = dateFormatter.SqlDate(new Date(req.query.begin));
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind),1);
         let type = req.query.sort;
         let sql;
         if(begin.includes('NaN') || eind.includes('NaN')){
@@ -74,8 +74,8 @@ module.exports = {
     
     getMeting(req, res, next) {
         let id = req.params.id;
-        let begin = dateFormatter.SqlDate(new Date(req.query.begin),-1);
-        let eind = dateFormatter.SqlDate(new Date(req.query.eind));
+        let begin = dateFormatter.SqlDate(new Date(req.query.begin));
+        let eind = dateFormatter.SqlDate(new Date(req.query.eind),1);
         let type = req.query.sort;
         let sql;
         if(begin.includes('NaN') || eind.includes('NaN')){
